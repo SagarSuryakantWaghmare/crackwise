@@ -60,6 +60,7 @@ const AuthForm = ({type}:{type:FormType}) => {
 
                 toast.success("Account created successfully.Please Sign in.")
                 router.push('/sign-in');
+                console.log("Sign up", values);
             }
             else {
                 const { email, password } = values;
