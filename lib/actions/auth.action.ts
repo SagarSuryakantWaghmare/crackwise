@@ -69,3 +69,36 @@ export async function setSessionCookie(idToken:string){
     })
 
 }
+
+export async function getCurrentUser(): Promise<User | null> {
+    const cookieStore = await cookies();
+  
+    const sessionCookie = cookieStore.get("session")?.value;
+    if (!sessionCookie) return null;
+  
+    try {
+      const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
+  
+      // get user info from db
+      const userRecord = await db
+        .collection("users")
+        .doc(decodedClaims.uid)
+        .get();
+      if (!userRecord.exists) return null;
+  
+      return {
+        ...userRecord.data(),
+        id: userRecord.id,
+      } as User;
+    } catch (error) {
+      console.log(error);
+  
+      // Invalid or expired session
+      return null;
+    }
+  }
+
+export async function isAuthenticated(){
+    const user=await getCurrentUser();
+    return !!user;
+}
