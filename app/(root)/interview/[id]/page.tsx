@@ -1,43 +1,63 @@
-import { getInterviewById } from '@/lib/actions/general.action';
-import { getRandomInterviewCover } from '@/utils';
-import { redirect } from 'next/navigation';
-import Image from 'next/image';
-import React from 'react'
-import DisplayTechIcons from '@/components/DisplayTechIcons';
-import { getCurrentUser } from '@/lib/actions/auth.action';
-import Agent from '@/components/Agent';
+import Image from "next/image";
+import { redirect } from "next/navigation";
 
-const page = async({ params }: RouteParams) => {
-    const user=getCurrentUser();
-    const { id } = await params;
-    console.log(id);
-    const interview=await getInterviewById(id);
-    if(!interview) redirect('/');
-    return (
-        <>
-        <div className='flex flex-row gap-4 justify-between '>
-            <div className='flex flex-col gap-4 items-center max-sm:flex-col'>
-               <div className='flex flex-row gap-4 items-center'>
-                  <Image src={getRandomInterviewCover()} alt='cover-image' width={40} height={40} className='rounded-full object-cover size-[40px]'/>
-                  <h3 className='capitalize'>{interview.role} Interview</h3>
-               </div>
-               <DisplayTechIcons techStack={interview.techstack}/>
+import Agent from "@/components/Agent";
+import { getRandomInterviewCover } from "@/lib/utils";
 
-            </div>
-            <p className='bg-dark-200 px-4 py-2 rounded-lg h-fit capitalize'>{interview.type}</p>
+import {
+  getFeedbackByInterviewId,
+  getInterviewById,
+} from "@/lib/actions/general.action";
+import { getCurrentUser } from "@/lib/actions/auth.action";
+import DisplayTechIcons from "@/components/DisplayTechIcons";
 
+const InterviewDetails = async ({ params }: RouteParams) => {
+  const { id } = await params;
+
+  const user = await getCurrentUser();
+
+  const interview = await getInterviewById(id);
+  if (!interview) redirect("/");
+
+  const feedback = await getFeedbackByInterviewId({
+    interviewId: id,
+    // userId: user?.id!,
+    userId:"2w5GLXWl50SVIHjywDyiDJvTmFe2"
+  });
+
+  return (
+    <>
+      <div className="flex flex-row gap-4 justify-between">
+        <div className="flex flex-row gap-4 items-center max-sm:flex-col">
+          <div className="flex flex-row gap-4 items-center">
+            <Image
+              src={getRandomInterviewCover()}
+              alt="cover-image"
+              width={40}
+              height={40}
+              className="rounded-full object-cover size-[40px]"
+            />
+            <h3 className="capitalize">{interview.role} Interview</h3>
+          </div>
+
+          <DisplayTechIcons techStack={interview.techstack} />
         </div>
-        <Agent 
-        // userName={user?.name}
-        userName={"Sagar"}
-        // userId={user?.id}
-        userId="2w5GLXWl50SVIHjywDyiDJvTmFe2"
+
+        <p className="bg-dark-200 px-4 py-2 rounded-lg h-fit">
+          {interview.type}
+        </p>
+      </div>
+
+      <Agent
+        userName={user?.name!}
+        userId={user?.id}
         interviewId={id}
         type="interview"
         questions={interview.questions}
-        />
-        </>
-    )
-}
+        feedbackId={feedback?.id}
+      />
+    </>
+  );
+};
 
-export default page
+export default InterviewDetails;
