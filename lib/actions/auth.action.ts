@@ -2,9 +2,6 @@
 
 import { auth, db } from "@/firebase/admin";
 import { cookies } from "next/headers";
-// utils/firebaseHelpers.js
-
-
 
 // Session duration (1 week)
 const SESSION_DURATION = 60 * 60 * 24 * 7;
@@ -26,7 +23,6 @@ export async function setSessionCookie(idToken: string) {
     path: "/",
     sameSite: "lax",
   });
-
 }
 
 export async function signUp(params: SignUpParams) {
@@ -81,8 +77,7 @@ export async function signIn(params: SignInParams) {
         success: false,
         message: "User does not exist. Create an account.",
       };
-    await storeInLocalStorage(userRecord.uid);
-    console.log(userRecord.uid);
+
     await setSessionCookie(idToken);
   } catch (error: any) {
     console.log("");
@@ -94,16 +89,6 @@ export async function signIn(params: SignInParams) {
   }
 }
 
-// Function to storage the user
-// utils/firebaseHelpers.js
-
-
-export async function storeInLocalStorage(uid: string) {
-  await localStorage.setItem("userId", uid);
-  console.log("User ID stored in localStorage:", uid);
-}
-
-
 // Sign out user by clearing the session cookie
 export async function signOut() {
   const cookieStore = await cookies();
@@ -111,9 +96,7 @@ export async function signOut() {
   cookieStore.delete("session");
 }
 
-
-
-
+// Get current user from session cookie
 export async function getCurrentUser(): Promise<User | null> {
   const cookieStore = await cookies();
 
@@ -147,5 +130,3 @@ export async function isAuthenticated() {
   const user = await getCurrentUser();
   return !!user;
 }
-
-
