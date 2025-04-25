@@ -3,12 +3,13 @@ import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
 import InterviewCard from '@/components/InterviewCard'
-import { getCurrentUser} from '@/lib/actions/auth.action';
-import { getInterviewsByUserId,getLatestInterviews } from '@/lib/actions/general.action'
-const page = async() => {
+import { getCurrentUser, logOutUser } from '@/lib/actions/auth.action';
+import LogoutButton from "@/components/LogoutButton";
+import { getInterviewsByUserId, getLatestInterviews } from '@/lib/actions/general.action'
+const page = async () => {
   const user = await getCurrentUser();
   // From the cookie get the user id and get the user interviews
-  
+
 
 
   const [userInterviews, allInterview] = await Promise.all([
@@ -20,6 +21,7 @@ const page = async() => {
   const hasUpcomingInterviews = allInterview?.length! > 0;
   return (
     <>
+      <LogoutButton />
       <section className='card-cta'>
         <div className='flex flex-col gap-6 max-w-lg'>
           <h2>Get Interview-Ready with AI-Powered Practice & Feeback</h2>
@@ -55,22 +57,22 @@ const page = async() => {
 
           <h2>Taken an Interview</h2>
           <div className="interviews-section">
-          {hasUpcomingInterviews ? (
-            allInterview?.map((interview) => (
-              <InterviewCard
-                key={interview.id}
-                userId={user?.id}
-                interviewId={interview.id}
-                role={interview.role}
-                type={interview.type}
-                techstack={interview.techstack}
-                createdAt={interview.createdAt}
-              />
-            ))
-          ) : (
-            <p>There are no interviews available</p>
-          )}
-        </div>
+            {hasUpcomingInterviews ? (
+              allInterview?.map((interview) => (
+                <InterviewCard
+                  key={interview.id}
+                  userId={user?.id}
+                  interviewId={interview.id}
+                  role={interview.role}
+                  type={interview.type}
+                  techstack={interview.techstack}
+                  createdAt={interview.createdAt}
+                />
+              ))
+            ) : (
+              <p>There are no interviews available</p>
+            )}
+          </div>
 
         </section>
       </section>
